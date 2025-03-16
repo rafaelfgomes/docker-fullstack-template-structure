@@ -1,9 +1,9 @@
 services:
   database:
     volumes:
-      - mariadb:/var/lib/mysql
+      - mysql:/var/lib/mysql
     container_name: app-db
-    image: mariadb:11.4.5
+    image: mysql
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -16,7 +16,6 @@ services:
   php:
     volumes:
       - ./project/backend:/var/www/html
-      - /etc/localtime:/etc/localtime:ro
     container_name: cli-php
     build:
       context: .
@@ -24,6 +23,7 @@ services:
       args:
         UID: ${UID}
         GID: ${GID}
+        TIMEZONE: ${TIMEZONE}
     depends_on:
       - "database"
     networks:
@@ -38,9 +38,10 @@ services:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
       args:
-        PORT: ${BACKEND_PORT}
+        PORT: 8080
+        TIMEZONE: ${TIMEZONE}
     ports:
-      - "${BACKEND_PORT:-12000}:12000"
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       - "php"
     networks:
@@ -49,7 +50,6 @@ services:
   composer:
     volumes:
       - ./project/backend:/app
-      - /etc/localtime:/etc/localtime:ro
     container_name: cli-composer
     build:
       context: .
@@ -57,6 +57,7 @@ services:
       args:
         UID: ${UID}
         GID: ${GID}
+        TIMEZONE: ${TIMEZONE}
     depends_on:
       - "ws-backend"
     networks:
@@ -72,6 +73,7 @@ services:
       args:
         UID: ${UID}
         GID: ${GID}
+        TIMEZONE: ${TIMEZONE}
     depends_on:
       - "ws-backend"
     networks:
@@ -86,9 +88,10 @@ services:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
       args:
-        PORT: ${FRONTEND_PORT}
+        PORT: 80
+        TIMEZONE: ${TIMEZONE}
     ports:
-      - "${FRONTEND_PORT:-10000}:10000"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - "node"
     networks:
@@ -96,9 +99,9 @@ services:
 
 networks:
   net:
-    name: app-network
+    name: project-network
     external: false
 
 volumes:
-  mariadb:
+  mysql:
     name: db-data
