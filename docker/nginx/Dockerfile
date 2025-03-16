@@ -1,8 +1,10 @@
-FROM nginx:1.25.3-alpine
+FROM nginx:1.27.4-alpine
+
+ARG PORT
 
 WORKDIR /var/www/html
 
-EXPOSE 10000 12000
+EXPOSE ${PORT}
 
 ENTRYPOINT [ "nginx" ]
 

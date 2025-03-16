@@ -1,4 +1,4 @@
-FROM composer:2.6.6
+FROM composer:2.8.6
 
 ARG UID
 ARG GID
@@ -13,12 +13,8 @@ WORKDIR /app
 
 RUN chown -R admin:container .
 
-ADD ./docker/composer/entrypoint.sh /entrypoint.sh
-
 RUN docker-php-ext-install pdo pdo_mysql
 
 USER admin
-
-ENTRYPOINT [ "sh", "/entrypoint.sh" ]
 
 CMD ["tail", "-f", "/dev/null"]
