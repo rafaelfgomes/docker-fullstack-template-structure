@@ -1,1 +1,1 @@
-# Scheduler App
+# Docker Fulstack (Frontend + Backend) Template
